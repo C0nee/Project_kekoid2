@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,7 +40,14 @@ public class Player_Controler : MonoBehaviour
     }
     void OnFire()
     {
-      GameObject bullet =   Instantiate(bulletPrefab, bulletSpawn );
+        
+            GameObject bullet =   Instantiate(bulletPrefab, bulletSpawn );
+         void OnCollisionEnter(Collision collision) {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(bullet);
+        } 
+        }
         bullet.transform.parent = null;
         bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletspeed, ForceMode.VelocityChange);
         Destroy(bullet,5);
@@ -52,13 +60,21 @@ public class Player_Controler : MonoBehaviour
             hpScrollbar.size = hp / 10;
             Vector3 pushVector = collision.gameObject.transform.position - transform.position;
             collision.gameObject.GetComponent<Rigidbody>().AddForce(pushVector.normalized * 5, ForceMode.Impulse);
+            
 
-
+        }
+        if (collision.gameObject.CompareTag("Heal"))
+        {
+            hp = 10;
+            hpScrollbar.size = hp / 10;
+            Destroy(collision.gameObject);
         }
     }
   void Die()
     {
+
         transform.Translate(Vector3.up);
         transform.Rotate(Vector3.right);
+        Time.timeScale= 0;
     }
 }
